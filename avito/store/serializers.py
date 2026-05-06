@@ -5,7 +5,13 @@ from rest_framework import serializers
 class UserSerializers(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id', 'status', 'age','username']
+
+
+class UserDetailSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['last_name', 'user_name', 'first_name','avatar']
 
 
 class CategorySerializers(serializers.ModelSerializer):
