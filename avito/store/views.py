@@ -1,4 +1,4 @@
-from .serializers import UserSerializers, CategorySerializers, SubCategorySerializers, ProductImageSerializers, ProductSerializers, ReviewSerializers
+from .serializers import *
 from . models import User, Cartegory, SubCategory, Product, ProductImage, Review
 from rest_framework import viewsets, generics, status
 
@@ -18,9 +18,14 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = SubCategorySerializers
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializers
+    serializer_class = ProductListSerializers
+
+
+class ProductDetailAPIView(generics.RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductDetailSerializers
 
 
 class ProductImageViewSet(viewsets.ModelViewSet):
