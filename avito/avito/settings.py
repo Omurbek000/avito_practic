@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'store',
     'rest_framework',
     'phonenumber_field',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -146,3 +147,6 @@ AUTH_USER_MODEL = 'store.User'
 
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}

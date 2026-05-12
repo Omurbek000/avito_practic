@@ -47,7 +47,7 @@ class Cartegory(models.Model):
 
 
 class SubCategory(models.Model):
-    category_name = models.ForeignKey(Cartegory, on_delete=models.CASCADE)
+    category_name = models.ForeignKey(Cartegory, on_delete=models.CASCADE,related_name='sub_category')
     sub_category_image = models.ImageField(
         upload_to="sub_category_image/", null=True, blank=True
     )
@@ -58,7 +58,7 @@ class SubCategory(models.Model):
 
 
 class Product(models.Model):
-    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE,related_name='sub_category_product')
     product_name = models.CharField(max_length=32)
     product_image = models.ImageField(upload_to="product_image/", null=True, blank=True)
     article_number = models.PositiveBigIntegerField(unique=True, null=True, blank=True)
@@ -77,8 +77,8 @@ class ProductImage(models.Model):
 
 
 class Review(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='product_review')
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='user_review')
     stars = models.PositiveSmallIntegerField(
         choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True
     )
