@@ -5,24 +5,19 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 ROLE_CHOICES = (
-    ("simple"),
-    ("simple"),
-    ("bronze"),
-    ("bronze"),
-    ("silver"),
-    ("silver"),
-    ("gold"),
-    ("gold"),
+    ("simple", "Simple"),     
+    ("bronze", "Bronze"),
+    ("silver", "Silver"),
+    ("gold", "Gold"),
 )
 
-
-TYPE_CHOICES =(
-    ('new'), ('new'),
-    ('used'), ('used'),
-    ('reserved'), ('reserved'),
-    ('sold'), ('sold'),
-
+TYPE_CHOICES = (
+    ('new', 'New'),             
+    ('used', 'Used'),
+    ('reserved', 'Reserved'),
+    ('sold', 'Sold'),
 )
+
 
 class User(AbstractUser):
     status = models.CharField(max_length=16, choices=ROLE_CHOICES, default="simple")
@@ -42,43 +37,42 @@ class Cartegory(models.Model):
         upload_to="category_image/", null=True, blank=True
     )
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.category_name
 
 
 class SubCategory(models.Model):
-    category_name = models.ForeignKey(Cartegory, on_delete=models.CASCADE,related_name='sub_category')
+    category_name = models.ForeignKey(Cartegory, on_delete=models.CASCADE, related_name='sub_category')
     sub_category_image = models.ImageField(
         upload_to="sub_category_image/", null=True, blank=True
     )
     sub_category_name = models.CharField(max_length=32, unique=True)
 
-    def __str__(self) -> str:
-        return self.category_name
+    def __str__(self):
+        return self.sub_category_name
 
 
 class Product(models.Model):
-    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE,related_name='sub_category_product')
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='sub_category_product')
     product_name = models.CharField(max_length=32)
-    product_image = models.ImageField(upload_to="product_image/", null=True, blank=True)
     article_number = models.PositiveBigIntegerField(unique=True, null=True, blank=True)
     price = models.PositiveIntegerField()
     description = models.TextField(null=True, blank=True)
-    product_type = models.CharField(max_length=6, choices=TYPE_CHOICES, default='new')
-    created_data = models.DateTimeField(auto_now_add=True)
+    product_type = models.CharField(max_length=8, choices=TYPE_CHOICES, default='new')
+    created_date = models.DateTimeField(auto_now_add=True) 
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.product_name
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='product_image')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')  
     product_image = models.ImageField(upload_to="image_product/", null=True, blank=True)
 
 
 class Review(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='product_review')
-    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='user_review')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_review')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_review')
     stars = models.PositiveSmallIntegerField(
         choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True
     )

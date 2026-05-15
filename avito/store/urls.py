@@ -1,12 +1,24 @@
-from . views import UserViewSet, CategoryViewSet, SubCategoryViewSet, ProductViewSet, ProductImageViewSet, ReviewViewSet
-from django.urls import path, include
+from django.urls import path
+from rest_framework.routers import DefaultRouter
+from .views import (
+    UserViewSet,
+    CategoryListViewSet, CategoryDetailAPIView,
+    SubCategoryListAPIView, SubCategoryDetailAPIView,
+    ProductListAPIView, ProductDetailAPIView,
+    ProductImageViewSet,
+    ReviewViewSet
+)
+
+router = DefaultRouter()
+router.register(r'users', UserViewSet)
+router.register(r'categories', CategoryListViewSet)
+router.register(r'product-images', ProductImageViewSet)
+router.register(r'reviews', ReviewViewSet)
 
 urlpatterns = [
-    path('user/', UserViewSet.as_view(), name='users'),
-    path('category/', CategoryViewSet.as_view(), name='categorys'),
-    path('sub_category/', SubCategoryViewSet.as_view(), name='sub_categorys'),
-    path('product/', ProductViewSet.as_view(), name='products'),
-    path('product_image/', ProductImageViewSet.as_view(), name='product_images'),
-    path('review/', ReviewViewSet.as_view(), name='reviews'),
-    
-]
+    path('subcategories/', SubCategoryListAPIView.as_view()),
+    path('subcategories/<int:pk>/', SubCategoryDetailAPIView.as_view()),
+    path('categories/<int:pk>/', CategoryDetailAPIView.as_view()),
+    path('products/', ProductListAPIView.as_view()),
+    path('products/<int:pk>/', ProductDetailAPIView.as_view()),
+] + router.urls

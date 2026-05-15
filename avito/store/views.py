@@ -1,7 +1,7 @@
 from .serializers import *
-from . models import User, Cartegory, SubCategory, Product, ProductImage, Review
-from rest_framework import viewsets, generics, status
-from rest_framework.filters import SearchFilter ,OrderingFilter
+from .models import User, Cartegory, SubCategory, Product, ProductImage, Review
+from rest_framework import viewsets, generics
+from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import ProductFilter
 
@@ -14,7 +14,8 @@ class UserViewSet(viewsets.ModelViewSet):
 class CategoryListViewSet(viewsets.ModelViewSet):
     queryset = Cartegory.objects.all()
     serializer_class = CategoryListSerializers
-    
+
+
 class CategoryDetailAPIView(generics.RetrieveAPIView):
     queryset = Cartegory.objects.all()
     serializer_class = CategoryDetailSerializers
@@ -34,9 +35,9 @@ class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializers
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_class =  ProductFilter
+    filterset_class = ProductFilter
     search_fields = ['product_name']
-    ordering_fields = ['price','created_date','product_type']
+    ordering_fields = ['price', 'created_date', 'product_type']  
 
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
