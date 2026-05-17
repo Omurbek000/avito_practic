@@ -78,3 +78,9 @@ class ReviewAdmin(admin.ModelAdmin):
     list_filter = ['stars']
     search_fields = ['product__product_name', 'user__username']
     readonly_fields = ['created_date']
+    
+    
+    
+# admin.site.index_title = "Avito Premium — Управление"
+# admin.site.site_title = "Avito Admin"
+# admin.site.site_header = "Avito Premium"    
