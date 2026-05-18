@@ -30,6 +30,20 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to="avatar_image/", null=True, blank=True)
     date_register = models.DateField(auto_now_add=True)
 
+    def __str__(self) :
+        return self.status
+
+    def get_user_rating(self):
+        ratings = self.user_review.all()
+        if ratings.exists():
+            return  sum([i.stars for i in ratings]) / ratings.count()
+        
+        return 0
+    
+    def get_user_people(self):
+        return self.user_review.count()
+    
+        
 
 class Cartegory(models.Model):
     category_name = models.CharField(max_length=32, unique=True)
@@ -63,6 +77,17 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product_name
+    
+    def get_avg_rating(self):
+        ratings = self.product_review.all()
+        if ratings.exists():
+            return  sum([i.stars for i in ratings]) / ratings.count()
+        
+        return 0
+    
+    def get_count_people(self):
+        return self.product_review.count()
+    
 
 
 class ProductImage(models.Model):

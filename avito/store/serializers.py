@@ -3,9 +3,17 @@ from rest_framework import serializers
 
 
 class UserSerializers(serializers.ModelSerializer):
+    get_user_rating = serializers.SerializerMethodField()
+    get_user_people = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'username', 'age', 'phone_number', 'avatar']
+        fields = ['id', 'username', 'age', 'phone_number', 'avatar','get_user_rating', 'get_user_people']
+        
+    def get_user_rating(self, obj):
+        return obj.get_user_rating()
+    
+    def get_user_people(self, obj):
+        return obj.get_user_people()
 
 
 class CategoryListSerializers(serializers.ModelSerializer):
@@ -43,9 +51,17 @@ class ProductListSerializers(serializers.ModelSerializer):
 class ProductDetailSerializers(serializers.ModelSerializer):
     product_image = ProductImageSerializers(source='images', read_only=True, many=True)  
     created_date = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S")
+    get_avg_rating = serializers.SerializerMethodField()
+    get_count_people = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields = ['id', 'article_number', 'product_name', 'price', 'description', 'product_type', 'created_date', 'product_image']
+        fields = ['id', 'article_number', 'product_name', 'price', 'description', 'product_type', 'created_date', 'product_image','get_avg_rating','get_count_people']
+        
+    def get_avg_rating(self, obj):
+        return obj.get_avg_rating()
+    
+    def get_count_people(self, obj):
+        return obj.get_count_people()
 
 
 class SubCategoryListSerializers(serializers.ModelSerializer):

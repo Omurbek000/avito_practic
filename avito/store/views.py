@@ -1,14 +1,19 @@
 from .serializers import *
 from .models import User, Cartegory, SubCategory, Product, ProductImage, Review
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, permissions
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import ProductFilter
+from .pagination import ProductPagination
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializers
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return User.objects.filter(id=self.request.user.id)
 
 
 class CategoryListViewSet(viewsets.ModelViewSet):
@@ -37,7 +42,8 @@ class ProductListAPIView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
     search_fields = ['product_name']
-    ordering_fields = ['price', 'created_date', 'product_type']  
+    ordering_fields = ['price', 'created_date', 'product_type']
+    pagination_class = ProductPagination  
 
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
@@ -53,3 +59,4 @@ class ProductImageViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializers
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
