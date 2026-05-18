@@ -6,7 +6,7 @@ from .views import (
     SubCategoryListAPIView, SubCategoryDetailAPIView,
     ProductListAPIView, ProductDetailAPIView,
     ProductImageViewSet,
-    ReviewViewSet
+    ReviewViewSet, ChangeProductStatusAPIView,
 )
 
 router = DefaultRouter()
@@ -21,4 +21,6 @@ urlpatterns = [
     path('categories/<int:pk>/', CategoryDetailAPIView.as_view()),
     path('products/', ProductListAPIView.as_view()),
     path('products/<int:pk>/', ProductDetailAPIView.as_view()),
+    
+    path('products/<int:pk>/<str:action>/', ChangeProductStatusAPIView.as_view(), name='product-change-status'),
 ] + router.urls

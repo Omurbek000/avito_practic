@@ -16,6 +16,30 @@ class UserSerializers(serializers.ModelSerializer):
         return obj.get_user_people()
 
 
+class OwnerShortSerializer(serializers.ModelSerializer):
+    """Минимальная информация о продавце для списка товаров."""
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'avatar']
+
+
+class OwnerDetailSerializer(serializers.ModelSerializer):
+    """Расширенная информация о продавце для детальной страницы товара."""
+    get_user_rating = serializers.SerializerMethodField()
+    get_user_people = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'avatar', 'get_user_rating', 'get_user_people']
+
+    def get_user_rating(self, obj):
+        return obj.get_user_rating()
+
+    def get_user_people(self, obj):
+        return obj.get_user_people()
+
+
+
 class CategoryListSerializers(serializers.ModelSerializer):
     class Meta:
         model = Cartegory
@@ -43,19 +67,22 @@ class ProductImageSerializers(serializers.ModelSerializer):
 
 class ProductListSerializers(serializers.ModelSerializer):
     product_image = ProductImageSerializers(source='images', read_only=True, many=True)  
+    owner = OwnerShortSerializer(read_only=True)
     class Meta:
         model = Product
-        fields = ['product_name', 'price', 'description', 'product_image']
+        fields = ['product_name', 'price', 'description', 'product_image','owner']
 
 
 class ProductDetailSerializers(serializers.ModelSerializer):
     product_image = ProductImageSerializers(source='images', read_only=True, many=True)  
+    owner = OwnerDetailSerializer(read_only=True)   
     created_date = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S")
     get_avg_rating = serializers.SerializerMethodField()
     get_count_people = serializers.SerializerMethodField()
+    
     class Meta:
         model = Product
-        fields = ['id', 'article_number', 'product_name', 'price', 'description', 'product_type', 'created_date', 'product_image','get_avg_rating','get_count_people']
+        fields = ['id', 'article_number', 'product_name', 'price', 'description', 'product_type', 'created_date', 'product_image','get_avg_rating','get_count_people','owner']
         
     def get_avg_rating(self, obj):
         return obj.get_avg_rating()
