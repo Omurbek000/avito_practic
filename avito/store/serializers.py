@@ -1,6 +1,76 @@
 from .models import User, Cartegory, SubCategory, Product, Review, ProductImage
 from rest_framework import serializers
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('email', 'username', 'password', 'phone_number','age')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def validate_email(self, value):
+        if UserProfile.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Пользователь с таким email уже существует")
+        return value
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        email = validated_data.pop('email')
+        username = validated_data.pop('username')
+        user = UserProfile(email=email, username=username, **validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+
+class CustomLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        try:
+            user = UserProfile.objects.get(email=email)
+        except UserProfile.DoesNotExist:
+            raise serializers.ValidationError({"email": "Пользователь с таким email не найден"})
+
+        if not user.check_password(password):
+            raise serializers.ValidationError({"password": "Неверный пароль"})
+
+
+
+        self.context['user'] = user
+        return data
+
+    def to_representation(self, instance):
+        user = self.context['user']
+        refresh = RefreshToken.for_user(user)
+
+        return {
+            'user': {
+                'username': user.username,
+                'email': user.email,
+            },
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        }
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, attrs):
+        token = attrs.get('refresh')
+        try:
+            RefreshToken(token)
+        except Exception:
+            raise serializers.ValidationError({"refresh": "Невалидный токен"})
+        return attrs
+
+
+
 
 class UserSerializers(serializers.ModelSerializer):
     get_user_rating = serializers.SerializerMethodField()
