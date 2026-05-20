@@ -104,3 +104,20 @@ class Review(models.Model):
     )
     comment = models.TextField(null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
+    
+
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
+    
+    def get_total_price(self):
+        return sum([i.get_total_price()for i in self.item.all()])
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cart_item')
+    product_cart = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField(default=1)
+
+
+    def get_total_price(self):
+        return self.quantity * self.product.price

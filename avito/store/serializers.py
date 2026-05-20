@@ -1,16 +1,17 @@
-from .models import User, Cartegory, SubCategory, Product, Review, ProductImage
+from .models import *
 from rest_framework import serializers
+from rest_framework.relations import PrimaryKeyRelatedField
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserProfile
+        model = User
         fields = ('email', 'username', 'password', 'phone_number','age')
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_email(self, value):
-        if UserProfile.objects.filter(email=value).exists():
+        if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Пользователь с таким email уже существует")
         return value
 
@@ -18,7 +19,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         email = validated_data.pop('email')
         username = validated_data.pop('username')
-        user = UserProfile(email=email, username=username, **validated_data)
+        user = User(email=email, username=username, **validated_data)
         user.set_password(password)
         user.save()
         return user
@@ -182,3 +183,26 @@ class ReviewSerializers(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ['product_review', 'user_review', 'product', 'user', 'stars', 'comment', 'created_date']
+        
+        
+class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductListSerializers(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), write_only=True,source='product')
+    total_price = serializers.SerializerMethodField()
+    class Meta:
+        model = CartItem
+        fields = ['id','product','product','product_id','quantity','total_price']
+        
+    def get_total_price(self, obj):
+        return obj.total_price
+    
+
+class CartSerializer(serializers.ModelSerializer):
+    cart_item = CartItemSerializer(many=True, read_only=True)
+    total_price = serializers.SerializerMethodField()
+    class Meta:
+        model = Cart
+        fields = ['id','cart_item','user','total_price']
+        
+    def get_total_price(self, obj):
+        return obj.total_price

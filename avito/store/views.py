@@ -1,5 +1,5 @@
 from .serializers import *
-from .models import User, Cartegory, SubCategory, Product, ProductImage, Review
+from .models import *
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -132,3 +132,31 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializers
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    
+    
+class CartAPIView(generics.RetrieveAPIView):
+    serializer_class = CartSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+    
+    def retrieve(self, request,**args, **kwargs)
+    cart, created = Cart.objects.get_or_created(user=request)
+    serializer = self.get_serializer()
+    return Response(serializer.data)
+
+class CartItemViewSet(viewsets.ModelViewSet):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    
+    def get_queryset(self):
+        return  CartItem.filter(cart__user=self.request.user)
+    
+    def perform_create(self, serializer):
+        cart, created = Cart.objects.get_or_create(user=self.request.user)
+        serializer.save(cart=cart)
+        return super().perform_create(serializer)
+    
+    
