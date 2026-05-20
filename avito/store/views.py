@@ -1,6 +1,6 @@
 from .serializers import *
 from .models import *
-from rest_framework import viewsets, generics, permissions, status
+from rest_framework import viewsets, generics, permissions, status, serializers
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import ProductFilter
@@ -143,13 +143,14 @@ class CartAPIView(generics.RetrieveAPIView):
         return Cart.objects.filter(user=self.request.user)
     
     def retrieve(self, request,**args, **kwargs)
-    cart, created = Cart.objects.get_or_created(user=request)
-    serializer = self.get_serializer()
+    cart, created = Cart.objects.get_or_created(user=self.request.user)
+    serializer = self.get_serializer(cart)
     return Response(serializer.data)
 
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
+    
     
     def get_queryset(self):
         return  CartItem.filter(cart__user=self.request.user)
@@ -157,6 +158,36 @@ class CartItemViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         cart, created = Cart.objects.get_or_create(user=self.request.user)
         serializer.save(cart=cart)
-        return super().perform_create(serializer)
+       
     
+
+class FavoriteAPIView(generics.RetrieveAPIView):
+    serializer_class = FavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
+    def get_queryset(self):
+        return Favorite.objects.filter(user=self.request.user)
+    
+    def retrieve(self, request, *args, **kwargs):
+        favorite, created = Favorite.objects.get_or_create(user=self.request.user)
+        serializer = self.get_serializer(favorite)
+        return Response(serializer.data)
+    
+
+
+class FavoriteItemViewSet(viewsets.ModelViewSet):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return FavoriteItem.objects.filter(favorite__user=self.request.user)
+    
+    def perform_create(self, serializer):
+        favorite , created = Favorite.objects.get_or_create(user=self.request.user)
+        product = serializer.validate_data['product']
+        
+        if FavoriteItem.objects.filter(favorite=favorite, product=product).exists():
+            raise serializers.ValidationError('Товар уже есть в избранной ')
+        
+        serializer.save(favorite=favorite)

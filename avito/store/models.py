@@ -121,3 +121,12 @@ class CartItem(models.Model):
 
     def get_total_price(self):
         return self.quantity * self.product.price
+
+
+class Favorite(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
+
+class FavoriteItem(models.Model):
+    favorite = models.ForeignKey(Favorite, on_delete=models.CASCADE, related_name='favorite_item')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)

@@ -194,7 +194,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = ['id','product','product','product_id','quantity','total_price']
         
     def get_total_price(self, obj):
-        return obj.total_price
+        return obj.total_price()
     
 
 class CartSerializer(serializers.ModelSerializer):
@@ -205,4 +205,21 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ['id','cart_item','user','total_price']
         
     def get_total_price(self, obj):
-        return obj.total_price
+        return obj.total_price()
+
+
+class FavoriteItemSerializer(serializers.ModelSerializer):
+    product = ProductListSerializers(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), write_only=True, sourse='product')
+    
+    class Meta:
+        model = FavoriteItem
+        fields = ['product','product_id','favorite']    
+
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    favorite_item = FavoriteItemSerializer(read_only=True, many=True)
+    class Meta:
+        model = Favorite
+        fields = ['id','user','favorite_item']
