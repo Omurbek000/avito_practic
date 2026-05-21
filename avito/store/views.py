@@ -93,34 +93,6 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     serializer_class = ProductDetailSerializers
 
 
-class ChangeProductStatusAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsProductOwner]
-
-    def post(self, request, pk, action):
-        product = get_object_or_404(Product, pk=pk)
-        
-        # Явно запускаем проверку object-level permissions
-        self.check_object_permissions(request, product)
-
-        allowed_transitions = {
-            'reserve': ['new', 'used'],
-            'sell': ['new', 'used', 'reserved'],
-        }
-        if action not in allowed_transitions:
-            return Response(
-                {"error": "Недопустимое действие. Используйте 'reserve' или 'sell'."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        if product.product_type not in allowed_transitions[action]:
-            return Response(
-                {"error": f"Нельзя перевести товар из статуса '{product.product_type}' в '{action}'."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        new_status = 'reserved' if action == 'reserve' else 'sold'
-        product.product_type = new_status
-        product.save()
-        return Response({"status": new_status}, status=status.HTTP_200_OK)
 
 
 class ProductImageViewSet(viewsets.ModelViewSet):

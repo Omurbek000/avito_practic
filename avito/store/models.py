@@ -67,7 +67,6 @@ class SubCategory(models.Model):
 
 
 class Product(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products_owner', null=True, blank=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, related_name='sub_category_product')
     product_name = models.CharField(max_length=32)
     article_number = models.PositiveBigIntegerField(unique=True, null=True, blank=True)

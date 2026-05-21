@@ -87,27 +87,6 @@ class UserSerializers(serializers.ModelSerializer):
         return obj.get_user_people()
 
 
-class OwnerShortSerializer(serializers.ModelSerializer):
-    """Минимальная информация о продавце для списка товаров."""
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'avatar']
-
-
-class OwnerDetailSerializer(serializers.ModelSerializer):
-    """Расширенная информация о продавце для детальной страницы товара."""
-    get_user_rating = serializers.SerializerMethodField()
-    get_user_people = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'avatar', 'get_user_rating', 'get_user_people']
-
-    def get_user_rating(self, obj):
-        return obj.get_user_rating()
-
-    def get_user_people(self, obj):
-        return obj.get_user_people()
 
 
 

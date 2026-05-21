@@ -21,5 +21,4 @@ urlpatterns = [
     path('cart_item/', CartItemViewSet.as_view({'get':'list','post': 'create'})),
     path('cart_item/<int:pk>/', CartItemViewSet.as_view({'put': 'update', 'delete': 'destroy'})),
     
-    path('products/<int:pk>/<str:action>/', ChangeProductStatusAPIView.as_view(), name='product-change-status'),
 ] + router.urls
