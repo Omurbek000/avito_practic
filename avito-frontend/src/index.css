@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+/* Сброс всего */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:         #080810;
+  --bg2:        #0f0f1a;
+  --glass:      rgba(255,255,255,0.05);
+  --glass-hov:  rgba(255,255,255,0.09);
+  --border:     rgba(255,255,255,0.08);
+  --border-act: rgba(123,79,255,0.45);
+  --purple:     #7B4FFF;
+  --blue:       #3B9EFF;
+  --grad:       linear-gradient(135deg, #7B4FFF, #3B9EFF);
+  --text:       #eeeef8;
+  --text2:      #7777aa;
+  --text3:      #444466;
+  --price:      #b09fff;
+  --r:          16px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg) !important;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Фоновые пятна */
+body::before {
+  content: '';
+  position: fixed; top: -20vh; left: -10vw;
+  width: 70vw; height: 70vh;
+  background: radial-gradient(ellipse, rgba(123,79,255,0.10) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; bottom: -15vh; right: -5vw;
+  width: 55vw; height: 55vh;
+  background: radial-gradient(ellipse, rgba(59,158,255,0.07) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+
+#root { position: relative; z-index: 1; }
+
+/* Inputs — всегда белый текст */
+input, select, textarea {
+  color: #eeeef8 !important;
+  background: rgba(255,255,255,0.06) !important;
+}
+input::placeholder { color: #444466 !important; }
+
+/* Спиннер */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 38px; height: 38px;
+  border: 3px solid rgba(255,255,255,0.08);
+  border-top-color: #7B4FFF;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+/* Скроллбар */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(123,79,255,0.35); border-radius: 4px; }
